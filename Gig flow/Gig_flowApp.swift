@@ -11,7 +11,7 @@ import SwiftUI
 struct Gig_flowApp: App {
     var body: some Scene {
         WindowGroup {
-            DashboardPage()
+            TabItems()
         }
     }
 }

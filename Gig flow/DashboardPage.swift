@@ -35,267 +35,267 @@ struct DashboardPage: View {
             .sorted { $0.dueDate < $1.dueDate }
     }
     
-//    @Binding var selectedTab: TabItems
+    @Binding var selectedTab: Tabs
     
     var body: some View {
-      
+        
+        
+        ScrollView {
             
-            ScrollView {
+            VStack(spacing: 20) {
                 
-                VStack(spacing: 20) {
+                // Earnings Card
+                VStack(alignment: .leading, spacing: 12) {
                     
-                    // Earnings Card
-                    VStack(alignment: .leading, spacing: 12) {
-                        
-                        Text("Earnings This Month:")
+                    Text("Earnings This Month:")
+                        .bold()
+                        .font(.headline)
+                    
+                    Text("$\(earnings, specifier: "%.2f")")
+                        .font(.largeTitle)
+                        .bold()
+                        .frame(maxWidth: .infinity, alignment: .center)
+                }
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color.white)
+                        .shadow(radius: 5)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.gray, lineWidth: 1)
+                )
+                .padding(.horizontal)
+                
+                
+                // Today's Tasks Card
+                VStack(alignment: .leading, spacing: 12) {
+                    
+                    HStack {
+                        Text("Today's Tasks")
                             .bold()
                             .font(.headline)
                         
-                        Text("$\(earnings, specifier: "%.2f")")
-                            .font(.largeTitle)
-                            .bold()
-                            .frame(maxWidth: .infinity, alignment: .center)
+                        Spacer()
+                        
+                        Button {
+                            selectedTab = .Gigs
+                        } label: {
+                            Text("See All >")
+                                .bold()
+                                .foregroundStyle(.black)
+                                .font(.headline)
+                        }
                     }
-                    .padding()
-                    .background(
+                    
+                    Divider()
+                    
+                    List {
+                        ForEach($gigs) { $gig in
+                            
+                            VStack(spacing: 0) {
+                                
+                                HStack {
+                                    
+                                    Button {
+                                        gig.isCompleted.toggle()
+                                    } label: {
+                                        Image(systemName: gig.isCompleted ? "checkmark.square" : "square")
+                                            .foregroundColor(gig.isCompleted ? .green : .gray)
+                                    }
+                                    
+                                    VStack(alignment: .leading) {
+                                        Text(gig.title)
+                                            .font(.headline)
+                                        
+                                        Text("Due Today • \(gig.estimatedHours)h")
+                                            .font(.caption)
+                                            .foregroundColor(.gray)
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    //                                        Image(systemName: "chevron.right")
+                                    //                                            .foregroundColor(.gray)
+                                }
+                                .padding(.vertical, 1)
+                                
+                                //                                    Divider()
+                            }
+                            //                                .listRowSeparator(.hidden)
+                        }
+                    }
+                    .listStyle(.plain)
+                    .frame(height: 220)
+                }
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color.white)
+                        .shadow(radius: 5)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.gray, lineWidth: 1)
+                )
+                .padding(.horizontal)
+                
+                
+                // Upcoming Deadlines Card
+                VStack {
+                    ZStack(alignment: .top) {
+                        
                         RoundedRectangle(cornerRadius: 16)
                             .fill(Color.white)
+                            .frame(height: 285)
                             .shadow(radius: 5)
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(Color.gray, lineWidth: 1)
-                    )
-                    .padding(.horizontal)
-                    
-                    
-                    // Today's Tasks Card
-                    VStack(alignment: .leading, spacing: 12) {
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .stroke(Color.gray, lineWidth: 1)
+                            )
                         
-                        HStack {
-                            Text("Today's Tasks")
-                                .bold()
-                                .font(.headline)
+                        VStack(alignment: .leading, spacing: 12) {
                             
-                            Spacer()
-                            
-                            Button {
-//                                selectedTab = .Gigs
-                            } label: {
-                                Text("See All >")
-                                    .bold()
-                                    .foregroundStyle(.black)
+                            // Header
+                            HStack {
+                                Text("Upcoming Deadlines")
                                     .font(.headline)
-                            }
-                        }
-                        
-                        Divider()
-                        
-                        List {
-                            ForEach($gigs) { $gig in
+                                    .foregroundColor(.black)
                                 
-                                VStack(spacing: 0) {
-                                    
+                                Spacer()
+                                
+                                Button {
+                                    selectedTab = .Gigs
+                                } label: {
+                                    Text("See all >")
+                                        .font(.headline)
+                                        .foregroundStyle(.black)
+                                        .bold()
+                                }
+                            }
+                            
+                            Divider()
+                            List{
+                                
+                                ForEach(upcomingGigs) { gig in
                                     HStack {
                                         
-                                        Button {
-                                            gig.isCompleted.toggle()
-                                        } label: {
-                                            Image(systemName: gig.isCompleted ? "checkmark.square" : "square")
-                                                .foregroundColor(gig.isCompleted ? .green : .gray)
-                                        }
-                                        
-                                        VStack(alignment: .leading) {
+                                        VStack(alignment: .leading, spacing: 4) {
                                             Text(gig.title)
                                                 .font(.headline)
                                             
-                                            Text("Due Today • \(gig.estimatedHours)h")
+                                            Text(gig.dueDate, style: .date)
                                                 .font(.caption)
                                                 .foregroundColor(.gray)
                                         }
                                         
                                         Spacer()
                                         
-                                        //                                        Image(systemName: "chevron.right")
-                                        //                                            .foregroundColor(.gray)
+                                        Text("\(gig.estimatedHours)h")
+                                            .font(.caption)
+                                            .background(Color.gray.opacity(0.1))
+                                            .cornerRadius(6)
                                     }
                                     .padding(.vertical, 1)
-                                    
-                                    //                                    Divider()
                                 }
-                                //                                .listRowSeparator(.hidden)
                             }
+                            .listStyle(.plain)
                         }
-                        .listStyle(.plain)
-                        .frame(height: 220)
+                        .padding()
+                        
                     }
-                    .padding()
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Color.white)
-                            .shadow(radius: 5)
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(Color.gray, lineWidth: 1)
-                    )
                     .padding(.horizontal)
                     
                     
-                    // Upcoming Deadlines Card
-                    VStack {
-                        ZStack(alignment: .top) {
+                    HStack{
+                        // Active gigs
+                        ZStack(alignment: .topLeading){
                             
                             RoundedRectangle(cornerRadius: 16)
-                                .fill(Color.white)
-                                .frame(height: 285)
-                                .shadow(radius: 5)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 16)
-                                        .stroke(Color.gray, lineWidth: 1)
+                                .frame(width: 180, height: 180)
+                                .foregroundStyle(.white)
+                                .shadow(radius: 10)
+                                .overlay(RoundedRectangle(cornerRadius: 16)
+                                    .stroke(Color.gray, lineWidth: 1)
                                 )
-                            
-                            VStack(alignment: .leading, spacing: 12) {
+                            VStack(alignment: .leading){
+                                Text("Active gigs")
+                                    .bold()
+                                    .padding()
                                 
-                                // Header
-                                HStack {
-                                    Text("Upcoming Deadlines")
-                                        .font(.headline)
-                                        .foregroundColor(.black)
+                                
+                                HStack{
+                                    Image(systemName:"clock.fill")
+                                        .resizable()
+                                        .frame(width: 50, height: 50)
+                                        .padding()
                                     
-                                    Spacer()
-                                    
-                                    Button {
-//                                        selectedTab = .Gigs
-                                    } label: {
-                                        Text("See all >")
-                                            .font(.headline)
-                                            .foregroundStyle(.black)
-                                            .bold()
-                                    }
+                                    Text("Active:")
+                                        .bold()
+                                        .font(.title2)
                                 }
                                 
-                                Divider()
-                                List{
-                                    
-                                    ForEach(upcomingGigs) { gig in
-                                        HStack {
-                                            
-                                            VStack(alignment: .leading, spacing: 4) {
-                                                Text(gig.title)
-                                                    .font(.headline)
-                                                
-                                                Text(gig.dueDate, style: .date)
-                                                    .font(.caption)
-                                                    .foregroundColor(.gray)
-                                            }
-                                            
-                                            Spacer()
-                                            
-                                            Text("\(gig.estimatedHours)h")
-                                                .font(.caption)
-                                                .background(Color.gray.opacity(0.1))
-                                                .cornerRadius(6)
-                                        }
-                                        .padding(.vertical, 1)
-                                    }
-                                }
-                                .listStyle(.plain)
+                                
                             }
-                            .padding()
+                            Text("\(activeItems)")
+                                .font(.largeTitle)
+                                .bold()
+                                .offset(x: 125, y: 120)
                             
                         }
-                        .padding(.horizontal)
-                        
-                        
-                        HStack{
-                            // Active gigs
-                            ZStack(alignment: .topLeading){
+                        // Pending Payments
+                        ZStack(alignment: .topLeading){
+                            
+                            RoundedRectangle(cornerRadius: 16)
+                            
+                                .frame(width: 180, height: 180)
+                                .foregroundStyle(.white)
+                                .shadow(radius: 10)
+                                .overlay(RoundedRectangle(cornerRadius: 16)
+                                    .stroke(Color.gray, lineWidth: 1)
+                                )
+                            
+                            VStack(alignment: .leading){
+                                Text("Pending Payments")
+                                    .padding()
+                                    .bold()
                                 
-                                RoundedRectangle(cornerRadius: 16)
-                                    .frame(width: 180, height: 180)
-                                    .foregroundStyle(.white)
-                                    .shadow(radius: 10)
-                                    .overlay(RoundedRectangle(cornerRadius: 16)
-                                        .stroke(Color.gray, lineWidth: 1)
-                                    )
-                                VStack(alignment: .leading){
-                                    Text("Active gigs")
+                                
+                                HStack{
+                                    Image(systemName: "exclamationmark.triangle.fill")
+                                        .resizable()
+                                        .frame(width: 50, height: 50)
+                                        .offset(x: 12, y: 15)
+                                    
+                                    
+                                    Text("Pending:")
                                         .bold()
-                                        .padding()
-                                    
-                                    
-                                    HStack{
-                                        Image(systemName:"clock.fill")
-                                            .resizable()
-                                            .frame(width: 50, height: 50)
-                                            .padding()
-                                        
-                                        Text("Active:")
-                                            .bold()
-                                            .font(.title2)
-                                    }
-                                    
+                                        .font(.title2)
+                                        .offset(x: 15, y: 17)
                                     
                                 }
-                                Text("\(activeItems)")
+                                Text("\(pendingItems)")
                                     .font(.largeTitle)
                                     .bold()
-                                    .offset(x: 125, y: 120)
+                                    .offset(x: 130, y: -2)
                                 
                             }
-                            // Pending Payments
-                            ZStack(alignment: .topLeading){
-                                
-                                RoundedRectangle(cornerRadius: 16)
-                                
-                                    .frame(width: 180, height: 180)
-                                    .foregroundStyle(.white)
-                                    .shadow(radius: 10)
-                                    .overlay(RoundedRectangle(cornerRadius: 16)
-                                        .stroke(Color.gray, lineWidth: 1)
-                                    )
-                                
-                                VStack(alignment: .leading){
-                                    Text("Pending Payments")
-                                        .padding()
-                                        .bold()
-                                    
-                                    
-                                    HStack{
-                                        Image(systemName: "exclamationmark.triangle.fill")
-                                            .resizable()
-                                            .frame(width: 50, height: 50)
-                                            .offset(x: 12, y: 15)
-                                        
-                                        
-                                        Text("Pending:")
-                                            .bold()
-                                            .font(.title2)
-                                            .offset(x: 15, y: 17)
-                                        
-                                    }
-                                    Text("\(pendingItems)")
-                                        .font(.largeTitle)
-                                        .bold()
-                                        .offset(x: 130, y: -2)
-                                    
-                                }
-                                
-                            }
-                            
                             
                         }
                         
                         
                     }
-                    .padding(.vertical)
+                    
+                    
                 }
+                .padding(.vertical)
             }
         }
     }
+}
 
 #Preview {
-    DashboardPage(/*selectedTab: .constant(.Dashboard)*/)
+    DashboardPage(selectedTab: .constant(.Dashboard))
 }
 
