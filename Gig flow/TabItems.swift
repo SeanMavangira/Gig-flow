@@ -22,7 +22,7 @@ struct TabItems: View {
         TabView(selection: $selected) {
             
             NavigationStack {
-                DashboardPage()
+                DashboardPage(selectedTab: $selected)
                     .navigationTitle("Dashboard")
             }
             .tabItem { Label("Dashboard", systemImage: "house.fill") }
