@@ -24,7 +24,7 @@ struct TabItems: View {
             
             
             NavigationStack {
-                GigsPage()
+                GigsPage(gigStore: gigStore)
                     .navigationTitle("Gigs")
             }
             .tabItem { Label("Gigs", systemImage: "briefcase.fill") }
@@ -52,3 +52,4 @@ struct TabItems: View {
 #Preview {
     TabItems()
 }
+
