@@ -13,7 +13,11 @@ import SwiftUI
 class GigStore{
     
     
-    @AppStorage("savedGigs") private var savedGigs: Data = Data()
+    private var savedGigs: Data {
+            get { UserDefaults.standard.data(forKey: "savedGigs") ?? Data() }
+            set { UserDefaults.standard.set(newValue, forKey: "savedGigs") }
+        }
+    
     var gigs: [Gig] = [] {
         didSet {
             saveGigs()
