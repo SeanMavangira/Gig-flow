@@ -42,7 +42,6 @@ class GigStore{
     
 }
 
-
 enum Tabs: String{
     case Dashboard
     case Gigs
@@ -51,8 +50,6 @@ enum Tabs: String{
     
     
 }
-
-
 
 struct Gig: Identifiable, Codable {
     
@@ -63,6 +60,9 @@ struct Gig: Identifiable, Codable {
     
     var isCompleted: Bool
     var isPaid: Bool
+    var isActive: Bool
+    var status: GigStatus
+    
     
     init(
         id: UUID = UUID(),
@@ -70,7 +70,10 @@ struct Gig: Identifiable, Codable {
         dueDate: Date,
         estimatedHours: Int,
         isCompleted: Bool = false,
-        isPaid: Bool = false
+        isPaid: Bool = false,
+        isActive: Bool = false,
+        status: GigStatus
+        
     ) {
         self.id = id
         self.title = title
@@ -78,5 +81,25 @@ struct Gig: Identifiable, Codable {
         self.estimatedHours = estimatedHours
         self.isCompleted = isCompleted
         self.isPaid = isPaid
+        self.isActive = isActive
+        self.status = status
     }
+}
+
+enum GigFliter: String, CaseIterable, Identifiable{
+    var id: Self {self}
+    
+        case all = "All"
+        case active = "Active"
+        case pending = "Pending"
+        case completed = "Completed"
+}
+
+enum GigStatus: String, CaseIterable, Identifiable, Codable {
+    case draft = "Draft"
+    case active = "Active"
+    case completed = "Completed"
+    case pendingPayment = "Pending Payment"
+    
+    var id: Self { self }
 }
