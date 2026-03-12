@@ -7,35 +7,31 @@
 
 import SwiftUI
 
-struct Gig: Identifiable {
-    let id = UUID()
-    var title: String
-    var dueDate: Date
-    var isCompleted = false
-    var estimatedHours: Int
-}
+
 
 struct DashboardPage: View {
     
     @State var earnings: Double = 0.0
-    @State private var activeItems = 2
-    @State private var pendingItems = 6
+    var activeItems: Int {
+        gigStore.gigs.filter{ gig in
+            !gig.isCompleted
+        }.count
+    }
+    var pendingItems: Int {
+        gigStore.gigs.filter{ gig in
+            !gig.isPaid
+        }.count
+    }
     
-    @State var gigs: [Gig] = [
-        Gig(title: "Edit Video for John", dueDate: Date(), estimatedHours: 2),
-        Gig(title: "Write Blog Post", dueDate: Date(), isCompleted: true, estimatedHours: 1),
-        Gig(title: "Design Poster", dueDate: Date(), isCompleted: false, estimatedHours: 3),
-        Gig(title: "Client Meeting", dueDate: Date(), isCompleted: false, estimatedHours: 1),
-        Gig(title: "Upload YouTube Video", dueDate: Date(), isCompleted: false, estimatedHours: 2)
-    ]
     
     var upcomingGigs: [Gig] {
-        gigs
+        gigStore.gigs
             .filter { !$0.isCompleted }
             .sorted { $0.dueDate < $1.dueDate }
     }
     
     @Binding var selectedTab: Tabs
+    @Binding var gigStore: GigStore
     
     var body: some View {
         
@@ -92,7 +88,7 @@ struct DashboardPage: View {
                     Divider()
                     
                     List {
-                        ForEach($gigs) { $gig in
+                        ForEach($gigStore.gigs) { $gig in
                             
                             VStack(spacing: 0) {
                                 
@@ -296,6 +292,6 @@ struct DashboardPage: View {
 }
 
 #Preview {
-    DashboardPage(selectedTab: .constant(.Dashboard))
+    DashboardPage(selectedTab: .constant(.Dashboard), gigStore: .constant(GigStore()))
 }
 
