@@ -7,22 +7,16 @@
 
 import SwiftUI
 
-enum Tabs: String{
-    case Dashboard
-    case Gigs
-    case Timer
-    case Earnings
-    
-    
-}
+
 
 struct TabItems: View {
     @State var selected: Tabs = .Dashboard
+    @State var gigStore = GigStore()
     var body: some View {
         TabView(selection: $selected) {
             
             NavigationStack {
-                DashboardPage(selectedTab: $selected)
+                DashboardPage(selectedTab: $selected, gigStore: $gigStore)
                     .navigationTitle("Dashboard")
             }
             .tabItem { Label("Dashboard", systemImage: "house.fill") }
