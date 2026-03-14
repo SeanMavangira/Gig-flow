@@ -57,6 +57,7 @@ struct Gig: Identifiable, Codable {
     var title: String
     var dueDate: Date
     var estimatedHours: Int
+    var clientName: String
     
     var isCompleted: Bool
     var isPaid: Bool
@@ -67,6 +68,7 @@ struct Gig: Identifiable, Codable {
     init(
         id: UUID = UUID(),
         title: String,
+        clientName: String,
         dueDate: Date,
         estimatedHours: Int,
         isCompleted: Bool = false,
@@ -77,6 +79,7 @@ struct Gig: Identifiable, Codable {
     ) {
         self.id = id
         self.title = title
+        self.clientName = clientName
         self.dueDate = dueDate
         self.estimatedHours = estimatedHours
         self.isCompleted = isCompleted
@@ -94,12 +97,44 @@ enum GigFliter: String, CaseIterable, Identifiable{
         case pending = "Pending"
         case completed = "Completed"
 }
-
 enum GigStatus: String, CaseIterable, Identifiable, Codable {
     case draft = "Draft"
     case active = "Active"
     case completed = "Completed"
-    case pendingPayment = "Pending Payment"
-    
+    case pendingPayment = "Pending"
+
     var id: Self { self }
+
+    var color: Color {
+        switch self {
+        case .draft:
+            return .gray
+        case .active:
+            return .orange
+        case .completed:
+            return .green
+        case .pendingPayment:
+            return .yellow
+        }
+    }
+}
+
+struct StatusBadge: View {
+    
+    let status: GigStatus
+    var action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            Text(status.rawValue)
+                .font(.caption)
+                .fontWeight(.medium)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4)
+                .background(status.color.opacity(0.2))
+                .foregroundColor(status.color)
+                .clipShape(Capsule())
+        }
+        .buttonStyle(.plain)
+    }
 }

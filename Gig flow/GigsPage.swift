@@ -56,8 +56,72 @@ struct GigsPage: View {
             .padding()
             
             ScrollView{
-                ForEach(filteredGigs){ gig in
-                    
+                ForEach(filteredGigs.indices, id: \.self) { index in
+                    let gig = filteredGigs[index]
+                    ZStack{
+                        RoundedRectangle(cornerRadius: 16)
+                            .frame(width: 380, height: 150)
+                            .foregroundStyle(Color.white)
+                            .shadow(radius: 5)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .stroke(Color.gray, lineWidth: 1)
+                            )
+                            .padding()
+                        
+                        VStack(/*alignment: .trailing*/){
+                            HStack{
+                                Text(gig.title)
+                                    .font(.title)
+                                    .bold()
+                                
+                                Spacer()
+                                
+                                Button{
+                                    
+                                }label: {
+                                    Image(systemName: "ellipsis")
+                                        .offset(x: -8, y: -5)
+                                        .foregroundStyle(.black)
+                                }
+                                
+                            }
+                            
+                            
+                            
+                            HStack{
+                                Text("Deadline: \(gig.dueDate.formatted(.dateTime.month(.abbreviated).day().year()))")
+                                    .font(.headline)
+                                
+                                Spacer()
+                                
+                                StatusBadge(status: gig.status) {
+                                    if let statusIndex = GigStatus.allCases.firstIndex(of: gig.status) {
+                                        let next = GigStatus.allCases[(statusIndex + 1) % GigStatus.allCases.count]
+                                        if let originalIndex = gigStore.gigs.firstIndex(where: { $0.id == gig.id }) {
+                                            gigStore.gigs[originalIndex].status = next
+                                        }
+                                    }
+                                }
+                            }
+
+                            
+                            Divider()
+                            
+                            HStack{
+                                Text("Client: \(gig.clientName)")
+                                    .font(.headline)
+                                
+                                Spacer()
+                                
+                                Text("\(gig.estimatedHours)/hr")
+                                    .font(.headline)
+                            }
+                        }
+                        .padding(30)
+                        
+                        
+                    }
                 }
             }
             Button{
@@ -75,100 +139,106 @@ struct GigsPage: View {
             
         }
         .sheet(isPresented: $showForm){
-            TextField("Title", text: $title)
-                .padding()
-                .frame(height: 60)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 19)
-                        .stroke(Color.gray, lineWidth: 1)
-                )
-                .padding()
-                
-            DatePicker("Deadline", selection: $deadLine, in: Date()..., displayedComponents: .date)
-                .datePickerStyle(.compact)
-                .padding()
-                .frame(height: 60)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 19)
-                        .stroke(Color.gray, lineWidth: 1)
-                )
-                .padding()
             
-            TextField("Client Name", text: $clientName)
-                .padding()
-                .frame(height: 60)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 19)
-                        .stroke(Color.gray, lineWidth: 1)
-                )
-                .padding()
-            
-            HStack {
-                        Text("Status") // Label on the left
-                            .foregroundColor(.black)
-                        
-                        Spacer()
-                        
-                        Menu {
-                            ForEach(GigStatus.allCases) { status in
-                                Button(status.rawValue) {
-                                    selectedStatus = status
-                                }
-                            }
-                        } label: {
-                            HStack {
-                                Text(selectedStatus.rawValue) // Selected value on the right
-                                    .foregroundColor(.primary)
-                                Image(systemName: "chevron.down")
-                                    .foregroundColor(.gray)
-                            }
-                            .padding(.horizontal)
-                            .frame(height: 34) // same height as other fields
-                            .background(Color.clear)
-                        }
-                    }
+            VStack{
+                TextField("Title", text: $title)
                     .padding()
-                    .frame(maxWidth: .infinity)
+                    .frame(height: 60)
                     .overlay(
                         RoundedRectangle(cornerRadius: 19)
                             .stroke(Color.gray, lineWidth: 1)
                     )
                     .padding()
-            
-            TextField("Estimated Hours", text: $estimatedHoursText)
-                .keyboardType(.numberPad)
+                
+                DatePicker("Deadline", selection: $deadLine, in: Date()..., displayedComponents: .date)
+                    .datePickerStyle(.compact)
+                    .padding()
+                    .frame(height: 60)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 19)
+                            .stroke(Color.gray, lineWidth: 1)
+                    )
+                    .padding()
+                
+                TextField("Client Name", text: $clientName)
+                    .padding()
+                    .frame(height: 60)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 19)
+                            .stroke(Color.gray, lineWidth: 1)
+                    )
+                    .padding()
+                
+                HStack {
+                    Text("Status")
+                        .foregroundColor(.black)
+                    
+                    Spacer()
+                    
+                    Menu {
+                        ForEach(GigStatus.allCases) { status in
+                            Button(status.rawValue) {
+                                selectedStatus = status
+                            }
+                        }
+                    } label: {
+                        HStack {
+                            Text(selectedStatus.rawValue) // Selected value on the right
+                                .foregroundColor(.primary)
+                            Image(systemName: "chevron.down")
+                                .foregroundColor(.gray)
+                        }
+                        .padding(.horizontal)
+                        .frame(height: 34) // same height as other fields
+                        .background(Color.clear)
+                    }
+                }
                 .padding()
-                .frame(height: 60)
+                .frame(maxWidth: .infinity)
                 .overlay(
                     RoundedRectangle(cornerRadius: 19)
                         .stroke(Color.gray, lineWidth: 1)
                 )
                 .padding()
-            
-            HStack{
-                if !title.isEmpty && !estimatedHoursText.isEmpty && !clientName.isEmpty{
+                
+                TextField("Estimated Hours", text: $estimatedHoursText)
+                    .keyboardType(.numberPad)
+                    .padding()
+                    .frame(height: 60)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 19)
+                            .stroke(Color.gray, lineWidth: 1)
+                    )
+                    .padding()
+                
+                HStack{
+                    if !title.isEmpty && !estimatedHoursText.isEmpty && !clientName.isEmpty{
+                        Button{
+                            let hours = Int(estimatedHoursText) ?? 0
+                            let newGig = Gig(
+                                title: title,
+                                clientName: clientName,
+                                dueDate: deadLine,
+                                estimatedHours: hours,
+                                status: selectedStatus
+                            )
+                            
+                            gigStore.gigs.append(newGig)
+                            resetForm()
+                        }label: {
+                            Text("Add")
+                        }
+                    }
+                    
                     Button{
-                        let hours = Int(estimatedHoursText) ?? 0
-                        let newGig = Gig(
-                            title: title,
-                            dueDate: deadLine,
-                            estimatedHours: hours,
-                            status: selectedStatus
-                        )
-                        
-                        gigStore.gigs.append(newGig)
-                        resetForm()
+                        showForm = false
                     }label: {
-                        Text("Add")
+                        Text("Cancel")
                     }
                 }
-                
-                Button{
-                 showForm = false
-                }label: {
-                    Text("Cancel")
-                }
             }
+            
+            
         }
     }
 }
